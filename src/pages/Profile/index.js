@@ -14,6 +14,7 @@ import {
 } from './styles';
 import { updateProfileRequest } from '~/store/modules/user/actions';
 import { signOut } from '~/store/modules/auth/actions';
+import Header from '~/components/Header';
 
 export default function Profile() {
   const profile = useSelector(state => state.user.profile);
@@ -53,6 +54,7 @@ export default function Profile() {
 
   return (
     <Background>
+      <Header />
       <Container>
         <Title>Meu perfil</Title>
         <Form>

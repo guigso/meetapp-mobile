@@ -6,6 +6,7 @@ import SignIn from '~/pages/SignIn';
 import SignUp from '~/pages/SignUp';
 import Profile from '~/pages/Profile';
 import Meetups from '~/pages/Meetups';
+import Inscriptions from '~/pages/Inscriptions';
 
 export default (isSigned = false) =>
   createAppContainer(
@@ -18,6 +19,7 @@ export default (isSigned = false) =>
         App: createBottomTabNavigator(
           {
             Meetups,
+            Inscriptions,
             Profile,
           },
           {

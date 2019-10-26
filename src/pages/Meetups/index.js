@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { format, subDays, addDays } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Background from '~/components/Background';
+import MeetupCard from '~/components/MeetupCard';
+import Header from '~/components/Header';
 import api from '~/services/api';
 
-import { Container, DateNavigation, DateText } from './styles';
+import { List, DateNavigation, DateText } from './styles';
 
 export default function Meetups() {
   const [date, setDate] = useState(new Date());
@@ -18,7 +20,6 @@ export default function Meetups() {
       const response = await api.get('meetups', {
         params: { date },
       });
-      console.tron.log(response.data);
       setMeetups(response.data);
     }
     loadMeetups();
@@ -31,9 +32,31 @@ export default function Meetups() {
   function handleNextDay() {
     setDate(addDays(date, 1));
   }
+  async function handleInscription(item) {
+    try {
+      const response = await api.post(`meetups/${item.id}/inscription`);
+
+      if (response.status === 200) {
+        setMeetups(meetups.filter(meetup => meetup.id !== item.id));
+      }
+    } catch (err) {
+      if (item.past) {
+        Alert.alert(
+          'Erro',
+          'Não é possível se inscrever em Meetups passados'
+        );
+      } else {
+        Alert.alert(
+          'Erro',
+          'Não é possível se inscrever em 2 Meetups na mesma hora'
+        );
+      }
+    }
+  }
 
   return (
     <Background>
+      <Header />
       <DateNavigation>
         <Icon
           name="chevron-left"
@@ -49,6 +72,17 @@ export default function Meetups() {
           onPress={() => handleNextDay()}
         />
       </DateNavigation>
+
+      <List
+        data={meetups}
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item }) => (
+          <MeetupCard
+            onInscription={() => handleInscription(item)}
+            data={item}
+          />
+        )}
+      />
     </Background>
   );
 }
